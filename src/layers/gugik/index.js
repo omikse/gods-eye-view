@@ -5,6 +5,7 @@ import {
   GUGIK_LAYER_IDS,
   gugikEntry,
   gugikLayerId,
+  gugikMaxAltitude,
 } from './services.js';
 import { imageryHostStatus } from '../weather/imageryHost.js';
 import { t } from '../../i18n/index.js';
@@ -34,6 +35,7 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
   const entry = gugikEntry(id);
   if (!entry) throw new TypeError(`Unknown GUGiK layer: ${id}`);
   const { service, layer: descriptor } = entry;
+  const maxAltitudeM = gugikMaxAltitude(entry);
   let viewer = null;
   let rendering = null;
   let imageryHost = null;
@@ -51,7 +53,7 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
   const cameraAltitude = () =>
     Number(viewer?.camera?.positionCartographic?.height) || 0;
 
-  const tooHigh = () => cameraAltitude() > service.maxAltitudeM;
+  const tooHigh = () => cameraAltitude() > maxAltitudeM;
 
   const refresh = () => {
     if (!enabled || !rendering) return;
@@ -140,7 +142,7 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
         ...rendering?.getDiagnostics(),
         service: service.id,
         wms: descriptor.wms,
-        maxAltitudeM: service.maxAltitudeM,
+        maxAltitudeM,
         cameraAltitudeM: Math.round(cameraAltitude()),
       };
     },

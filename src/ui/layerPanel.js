@@ -116,6 +116,28 @@ const PANEL_GROUPS = [
     ],
   },
   {
+    label: msg('Administrative boundaries (Poland)'),
+    ids: [
+      'prg-country',
+      'prg-voivodeships',
+      'prg-counties',
+      'prg-communes',
+      'prg-cities',
+      'prg-cadastral-units',
+      'prg-cadastral-districts',
+    ],
+  },
+  {
+    label: msg('Place names (Poland)'),
+    ids: [
+      'prng-settlements',
+      'prng-settlements-other',
+      'prng-features-official',
+      'prng-features-standard',
+      'prng-features-other',
+    ],
+  },
+  {
     label: msg('Weather'),
     ids: [
       'air-quality',

@@ -353,13 +353,14 @@ test('deixis prompt lint: one short rule, and every sentinel it names exists in 
   // trigger phrases already live, so the rule is still stated once. The
   // disambiguation table in instructions.js was deliberately left alone.
   //
-  // Then 52,100 -> 53,550 for the GUGiK record layers: twenty-two generated
-  // layer enum values across three services (buried utilities, cadastre and
-  // zoning plans), each its own Data Layers toggle, with one or two spoken
-  // aliases each. No new tool and no new rule; the aliases are the shortest
-  // set that still reaches each record set by name.
+  // Then 52,100 -> 54,550 for the GUGiK layers: thirty-four generated layer
+  // enum values across five services (buried utilities, cadastre, zoning
+  // plans, administrative boundaries and place names), each its own Data
+  // Layers toggle, with one or two spoken aliases each. No new tool and no
+  // new rule; the aliases are the shortest set that still reaches each layer
+  // by name.
   const size = instructions.length + JSON.stringify(GEV_REALTIME_TOOLS).length;
-  assert.ok(size <= 53550, `prompt size ${size}`);
+  assert.ok(size <= 54550, `prompt size ${size}`);
 });
 
 

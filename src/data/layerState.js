@@ -749,6 +749,66 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     disposition: 'enabled-only',
   }),
   Object.freeze({
+    id: 'prg-cadastral-districts',
+    token: '0o',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-cadastral-units',
+    token: '0n',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-cities',
+    token: '0m',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-communes',
+    token: '0l',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-counties',
+    token: '0k',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-country',
+    token: '0i',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prg-voivodeships',
+    token: '0j',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prng-features-official',
+    token: '0r',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prng-features-other',
+    token: '0t',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prng-features-standard',
+    token: '0s',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prng-settlements',
+    token: '0p',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'prng-settlements-other',
+    token: '0q',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'radio',
     token: 'r',
     disposition: 'enabled+options',

@@ -16,7 +16,9 @@ import { msg } from '../../i18n/marker.js';
  * the windows are nothing alike. GESUT still answers with a 6 km camera, while
  * EGiB parcels go blank somewhere under a 750 m span, so a single global
  * threshold would either spam one service with blank requests or hide the
- * other while it had plenty to say.
+ * other while it had plenty to say. A layer may override its service's value
+ * where it does not share it: the national boundary layers draw at any zoom,
+ * but the cadastral-unit ones inside the same service stop around 20 km.
  *
  * Coverage is maintained county by county and published unevenly, so an empty
  * tile is the ordinary answer rather than a fault — central Gdynia returns
@@ -37,6 +39,9 @@ export const GUGIK_RECTANGLE_DEGREES = Object.freeze({
   east: 24.4,
   north: 55.0,
 });
+
+/** Above any camera height the globe allows, so the layer is never gated. */
+export const UNRESTRICTED_ALTITUDE_M = Number.POSITIVE_INFINITY;
 
 export const GUGIK_SERVICES = Object.freeze([
   Object.freeze({
@@ -212,6 +217,111 @@ export const GUGIK_SERVICES = Object.freeze([
       }),
     ]),
   }),
+  Object.freeze({
+    id: 'prg',
+    url: 'https://mapy.geoportal.gov.pl/wss/service/PZGIK/PRG/WMS/AdministrativeBoundaries',
+    group: msg('Administrative boundaries (Poland)'),
+    credit:
+      '<a href="https://www.geoportal.gov.pl" target="_blank" rel="noopener">PRG © GUGiK</a>',
+    source: 'GUGiK PRG · PL',
+    icon: '⬡',
+    // Unlike the record services, these are drawn to be read from orbit: the
+    // state and voivodeship outlines return the same geometry at a 30 km span
+    // as at 300 m, so the service itself is not gated.
+    maxAltitudeM: UNRESTRICTED_ALTITUDE_M,
+    layers: Object.freeze([
+      Object.freeze({
+        id: 'country',
+        wms: 'A00_Granice_panstwa',
+        label: msg('State border'),
+        color: '#ff5a5a',
+      }),
+      Object.freeze({
+        id: 'voivodeships',
+        wms: 'A01_Granice_wojewodztw',
+        label: msg('Voivodeships'),
+        color: '#ff9a3c',
+      }),
+      Object.freeze({
+        id: 'counties',
+        wms: 'A02_Granice_powiatow',
+        label: msg('Counties'),
+        color: '#ffd24a',
+      }),
+      Object.freeze({
+        id: 'communes',
+        wms: 'A03_Granice_gmin',
+        label: msg('Communes'),
+        color: '#6fd36f',
+      }),
+      Object.freeze({
+        id: 'cities',
+        wms: 'A04_Granice_miast',
+        label: msg('City limits'),
+        color: '#4ad9c0',
+      }),
+      // Measured blank at a 30 km span where the layers above still draw.
+      Object.freeze({
+        id: 'cadastral-units',
+        wms: 'A05_Granice_jednostek_ewidencyjnych',
+        label: msg('Cadastral units'),
+        color: '#4aa3ff',
+        maxAltitudeM: 20_000,
+      }),
+      Object.freeze({
+        id: 'cadastral-districts',
+        wms: 'A06_Granice_obrebow_ewidencyjnych',
+        label: msg('Cadastral district borders'),
+        color: '#c08bff',
+        maxAltitudeM: 20_000,
+      }),
+    ]),
+  }),
+  Object.freeze({
+    id: 'prng',
+    url: 'https://mapy.geoportal.gov.pl/wss/service/PZGIK/PRNG/WMS/GeographicalNames',
+    group: msg('Place names (Poland)'),
+    credit:
+      '<a href="https://www.geoportal.gov.pl" target="_blank" rel="noopener">PRNG © GUGiK</a>',
+    source: 'GUGiK PRNG · PL',
+    icon: '⌖',
+    maxAltitudeM: UNRESTRICTED_ALTITUDE_M,
+    layers: Object.freeze([
+      Object.freeze({
+        id: 'settlements',
+        wms: 'M1_UrzedoweNazwyMiejscowosci',
+        label: msg('Official settlement names'),
+        color: '#e8edf2',
+      }),
+      Object.freeze({
+        id: 'settlements-other',
+        wms: 'M2_PozostaleNazwyMiejscowosci',
+        label: msg('Other settlement names'),
+        color: '#9aa4b2',
+      }),
+      Object.freeze({
+        id: 'features-official',
+        wms: 'O1_UrzedoweNazwyObiektowFizjograficznych',
+        label: msg('Official feature names'),
+        color: '#4ad9c0',
+        maxAltitudeM: 20_000,
+      }),
+      Object.freeze({
+        id: 'features-standard',
+        wms: 'O2_ZestandaryzowaneNazwyObiektowFizjograficznych',
+        label: msg('Standardised feature names'),
+        color: '#4aa3ff',
+        maxAltitudeM: 20_000,
+      }),
+      Object.freeze({
+        id: 'features-other',
+        wms: 'O3_PozostaleNazwyObiektowFizjograficznych',
+        label: msg('Other feature names'),
+        color: '#c9a227',
+        maxAltitudeM: 20_000,
+      }),
+    ]),
+  }),
 ]);
 
 /** `gesut-water`, `egib-parcels`, … — the catalog id for one service layer. */
@@ -237,6 +347,15 @@ export const GUGIK_LAYER_IDS = Object.freeze(ENTRIES.map(([id]) => id));
  */
 export function gugikEntry(id) {
   return BY_ID.get(id) ?? null;
+}
+
+/**
+ * The altitude gate that applies to a layer: its own, or its service's.
+ * @param {{service: object, layer: object}} entry - A resolved entry.
+ * @returns {number} Camera height in metres above which nothing is drawn.
+ */
+export function gugikMaxAltitude({ service, layer }) {
+  return layer.maxAltitudeM ?? service.maxAltitudeM;
 }
 
 /** Catalog ids belonging to one service, in its own order. */

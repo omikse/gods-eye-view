@@ -2901,5 +2901,19 @@
   "Zoning lines": "計画線",
   "Zoning points": "計画点",
   "Zoning zones": "計画ゾーン",
-  "Building lines": "建築線"
+  "Building lines": "建築線",
+  "Administrative boundaries (Poland)": "行政界（ポーランド）",
+  "State border": "国境",
+  "Voivodeships": "県",
+  "Counties": "郡",
+  "Communes": "自治体",
+  "City limits": "市域界",
+  "Cadastral units": "地籍単位",
+  "Cadastral district borders": "地籍区界",
+  "Place names (Poland)": "地名（ポーランド）",
+  "Official settlement names": "公式地名",
+  "Other settlement names": "その他の地名",
+  "Official feature names": "公式地物名",
+  "Standardised feature names": "標準化地物名",
+  "Other feature names": "その他の地物名"
 }

@@ -2971,5 +2971,19 @@
   "Zoning lines": "Planlinien",
   "Zoning points": "Planpunkte",
   "Zoning zones": "Planzonen",
-  "Building lines": "Baulinien"
+  "Building lines": "Baulinien",
+  "Administrative boundaries (Poland)": "Verwaltungsgrenzen (Polen)",
+  "State border": "Staatsgrenze",
+  "Voivodeships": "Woiwodschaften",
+  "Counties": "Landkreise",
+  "Communes": "Gemeinden",
+  "City limits": "Stadtgrenzen",
+  "Cadastral units": "Katastereinheiten",
+  "Cadastral district borders": "Gemarkungsgrenzen",
+  "Place names (Poland)": "Ortsnamen (Polen)",
+  "Official settlement names": "Amtliche Ortsnamen",
+  "Other settlement names": "Weitere Ortsnamen",
+  "Official feature names": "Amtliche Objektnamen",
+  "Standardised feature names": "Standardisierte Objektnamen",
+  "Other feature names": "Weitere Objektnamen"
 }

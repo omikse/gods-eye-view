@@ -3111,5 +3111,19 @@
   "Zoning lines": "Линии планов",
   "Zoning points": "Точки планов",
   "Zoning zones": "Зоны регламента",
-  "Building lines": "Линии застройки"
+  "Building lines": "Линии застройки",
+  "Administrative boundaries (Poland)": "Административные границы (Польша)",
+  "State border": "Государственная граница",
+  "Voivodeships": "Воеводства",
+  "Counties": "Повяты",
+  "Communes": "Гмины",
+  "City limits": "Границы городов",
+  "Cadastral units": "Кадастровые единицы",
+  "Cadastral district borders": "Границы кадастровых кварталов",
+  "Place names (Poland)": "Географические названия (Польша)",
+  "Official settlement names": "Официальные названия населённых пунктов",
+  "Other settlement names": "Прочие названия населённых пунктов",
+  "Official feature names": "Официальные названия объектов",
+  "Standardised feature names": "Стандартизованные названия объектов",
+  "Other feature names": "Прочие названия объектов"
 }

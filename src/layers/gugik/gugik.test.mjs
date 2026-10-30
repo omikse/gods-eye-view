@@ -5,6 +5,7 @@ import {
   GUGIK_LAYER_IDS,
   gugikEntry,
   gugikLayerId,
+  gugikMaxAltitude,
   gugikServiceLayerIds,
 } from './services.js';
 import {
@@ -69,7 +70,20 @@ test('every service names distinct WMS layers and a distinct catalog id', () => 
   }
 });
 
-test('the three services keep their own measured scale windows', () => {
+test('a layer may override its service window where it does not share it', () => {
+  // The national outlines draw at any zoom, but the cadastral-unit layers in
+  // the same service were measured blank at a 30 km span.
+  const country = gugikEntry('prg-country');
+  const units = gugikEntry('prg-cadastral-units');
+  assert.equal(gugikMaxAltitude(country), country.service.maxAltitudeM);
+  assert.equal(gugikMaxAltitude(units), 20_000);
+  assert.ok(gugikMaxAltitude(units) < gugikMaxAltitude(country));
+  // A layer without an override simply takes its service's value.
+  const parcels = gugikEntry('egib-parcels');
+  assert.equal(gugikMaxAltitude(parcels), parcels.service.maxAltitudeM);
+});
+
+test('the record services keep their own measured scale windows', () => {
   const byId = Object.fromEntries(
     GUGIK_SERVICES.map((service) => [service.id, service.maxAltitudeM]),
   );
@@ -77,6 +91,9 @@ test('the three services keep their own measured scale windows', () => {
   // either hide GESUT early or ask EGiB for blanks.
   assert.ok(byId.egib < byId.mpzp);
   assert.ok(byId.mpzp < byId.gesut);
+  // The boundary and name services are drawn to be read from orbit.
+  assert.ok(byId.prg > byId.gesut);
+  assert.ok(byId.prng > byId.gesut);
 });
 
 test('imagery is not served from here — these layers are record data', () => {

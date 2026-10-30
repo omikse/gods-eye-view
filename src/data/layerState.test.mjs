@@ -203,8 +203,8 @@ function encode(state) {
 test('production registry is exact, canonical, and rejects incomplete contracts', async () => {
   assert.equal(validateLayerStateRegistry(), true);
   // 32 before the GUGiK record layers (GESUT, EGiB, MPZP).
-  assert.equal(REGISTERED_LAYER_IDS.length, 54);
-  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 54);
+  assert.equal(REGISTERED_LAYER_IDS.length, 66);
+  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 66);
   assert.ok(REGISTERED_LAYER_IDS.includes('transit'));
   assert.deepEqual(REGISTERED_LAYER_IDS, [...REGISTERED_LAYER_IDS].sort());
   assert.deepEqual(LEGACY_LAYER_STATE_TOKENS, {
@@ -245,23 +245,23 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   }
   // Digits 6-9 and pairs 00-04 went to the nine GESUT utility networks, so
   // the ledger has already crossed into two-character tokens.
-  assert.equal(nextLayerStateToken(), '0i');
+  assert.equal(nextLayerStateToken(), '0u');
   assert.equal(
     nextLayerStateToken({
       ...LAYER_STATE_TOKEN_RESERVATIONS,
-      alpha: '0i',
-      bravo: '0j',
+      alpha: '0u',
+      bravo: '0v',
     }),
-    '0k',
+    '0w',
   );
   // The live ledger already exhausts the digits, so this is it.
   const digitsExhausted = { ...LAYER_STATE_TOKEN_RESERVATIONS };
-  assert.equal(nextLayerStateToken(digitsExhausted), '0i');
+  assert.equal(nextLayerStateToken(digitsExhausted), '0u');
   // 00 and 01 are already the GESUT layers', so these two only move the first
   // free pair along from 05.
   assert.equal(
-    nextLayerStateToken({ ...digitsExhausted, retired: '0i', used: '0j' }),
-    '0k',
+    nextLayerStateToken({ ...digitsExhausted, retired: '0u', used: '0v' }),
+    '0w',
   );
   assert.equal(
     nextLayerStateToken({
@@ -308,8 +308,8 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(
     validateLayerStateAllocations(LAYER_STATE_TOKEN_RESERVATIONS, {
       ...LAYER_STATE_TOKEN_RESERVATIONS,
-      future: '0i',
-      next: '0j',
+      future: '0u',
+      next: '0v',
     }),
     true,
   );
@@ -317,9 +317,9 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
     () =>
       validateLayerStateAllocations(LAYER_STATE_TOKEN_RESERVATIONS, {
         ...LAYER_STATE_TOKEN_RESERVATIONS,
-        future: '0k',
+        future: '0w',
       }),
-    /next free token 0i/,
+    /next free token 0u/,
   );
   // Free the last digit back out of the ledger to reach the boundary again.
   const beforeLastDigit = { ...digitsExhausted };
@@ -327,7 +327,7 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(
     validateLayerStateAllocations(beforeLastDigit, {
       ...beforeLastDigit,
-      futurePair: '0i',
+      futurePair: '0u',
       futureDigit: '9',
     }),
     true,
@@ -335,18 +335,18 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(
     validateLayerStateAllocations(digitsExhausted, {
       ...digitsExhausted,
-      pairB: '0j',
-      pairA: '0i',
+      pairB: '0v',
+      pairA: '0u',
     }),
     true,
   );
   assert.throws(
     () =>
       validateLayerStateAllocations(
-        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '0i' },
-        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '0i', competing: '0i' },
+        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '0u' },
+        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '0u', competing: '0u' },
       ),
-    /next free token 0j/,
+    /next free token 0v/,
   );
   assert.throws(
     () => validateLayerStateAllocations({ future: '00' }, { future: '01' }),
