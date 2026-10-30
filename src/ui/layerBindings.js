@@ -9,6 +9,9 @@ import {
   routeWorldFocusRequest,
 } from '../worldFocus.js';
 import { registerNavigationAuthorityListener } from '../navigationPolicy.js';
+// From the leaf service table, not the layer module: these are plain ids and
+// the shell has no business pulling Cesium in to read them.
+import { GUGIK_LAYER_IDS } from '../layers/gugik/services.js';
 /** Own manager subscriptions and the camera-entry events that outlive controls. */
 export class LayerBindings {
   constructor({
@@ -33,7 +36,7 @@ export class LayerBindings {
     this._disposed = false;
     this._dataManager = null;
     this._directionsShellModule = null;
-    this._weatherShellModules = [];
+    this._imageryHostModules = [];
     this._cctvRequestFocusHandler = null;
     this._removeCctvRequestFocusListener = null;
     this._worldRequestFocusHandler = null;
@@ -120,16 +123,25 @@ export class LayerBindings {
     });
   }
 
-  _connectWeatherCamera() {
-    for (const layer of this._weatherShellModules)
+  /**
+   * Hand the imagery host to every layer that drapes imagery.
+   *
+   * Membership is what matters here, not the weather half of the name: a layer
+   * left off this list falls back to `viewer.imageryLayers`, which is the
+   * HIDDEN globe whenever a 3D-tiles stack is lit, so it loads its tiles and
+   * draws nothing. Only the host knows which surface is currently showing.
+   */
+  _connectImageryHostLayers() {
+    for (const layer of this._imageryHostModules)
       layer.attachShellServices?.(null);
-    this._weatherShellModules = [];
+    this._imageryHostModules = [];
     for (const id of [
       'wind',
       'weather-radar',
       'weather-satellite',
       'weather-lightning',
       'weather-cyclones',
+      ...GUGIK_LAYER_IDS,
     ]) {
       const layer = this._dataManager?.layers?.get(id)?.module;
       if (typeof layer?.attachShellServices !== 'function') continue;
@@ -139,7 +151,7 @@ export class LayerBindings {
           this.runImmediateNavigation(noun, navigate),
         imageryHost: this.services.imageryHost,
       });
-      this._weatherShellModules.push(layer);
+      this._imageryHostModules.push(layer);
     }
   }
 
@@ -241,7 +253,7 @@ export class LayerBindings {
     // Its switch-on requests come from the manager, which arrives after it.
     this._streetLevelControls?.connect();
     this._connectDirectionsCamera();
-    this._connectWeatherCamera();
+    this._connectImageryHostLayers();
     if (!this._awarenessSelectedHandler) {
       this._awarenessSelectedHandler = (event) =>
         this._persistAwarenessSelection(event, false);
@@ -293,6 +305,6 @@ export class LayerBindings {
     this._directionsShellModule?.attachShellServices?.(null);
     this._directionsShellModule = null;
     this._dataManager = null;
-    this._connectWeatherCamera();
+    this._connectImageryHostLayers();
   }
 }

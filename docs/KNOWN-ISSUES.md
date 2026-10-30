@@ -10,6 +10,32 @@ For the roadmap and open backlog, see the repository issue tracker.
 
 ## Open
 
+### GUGiK overlays appear on Google 3D only after the camera moves
+Status: Open (upstream limitation)
+
+Context:
+- The GUGiK data layers drape as imagery. On a globe stack they draw as soon as
+  they are toggled; on a 3D-tiles stack they are added to the tileset's own
+  `imageryLayers`, which is the surface actually being drawn.
+- Cesium re-textures a 3D tile with newly added imagery when that tile is
+  loaded, so a layer switched on while the camera is parked stays invisible
+  until something makes the tileset fetch tiles again. Any camera move does it,
+  and in normal use the camera is rarely still, so this mostly shows up when
+  toggling layers from a fixed viewpoint.
+- Cesium's own changelog calls draping on 3D Tiles "basic support"
+  ([#12567](https://github.com/CesiumGS/cesium/pull/12567)), with later fixes
+  for layer removal and visibility; forcing a re-texture is not exposed.
+
+Ruled out as workarounds (none re-textures loaded tiles):
+- `Cesium3DTileset.trimLoadedTiles()`
+- `Cesium3DTileset.makeStyleDirty()`
+- toggling `tileset.show` or the imagery layer's `show`
+- lowering and restoring `maximumScreenSpaceError`
+
+Not affected:
+- Every globe stack (Esri, OSM, Bing, GUGiK Ortofotomapa), where the layers
+  draw immediately on toggle.
+
 ### Street traffic can be slow/uneven when panning across dense city blocks
 Status: Open (partially mitigated)
 

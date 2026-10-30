@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { LocationNavigation } from './locationNavigation.js';
 import { LayerBindings } from './layerBindings.js';
+import { GUGIK_LAYER_IDS } from '../layers/gugik/services.js';
 
 function replaceWindow(t, value) {
   const previous = Object.getOwnPropertyDescriptor(globalThis, 'window');
@@ -142,6 +143,36 @@ test('camera-entry listeners are removed before any asynchronous layer cleanup',
   assert.equal(changes, 1);
 });
 
+
+test('every imagery-draping layer gets the host, GUGiK records included', (t) => {
+  const { owner } = bindings(t);
+  const host = { collection: {}, kind: 'tileset' };
+  owner.services.imageryHost = () => host;
+  const attached = new Map();
+  // A layer left off this list falls back to viewer.imageryLayers, which is
+  // the HIDDEN globe under a 3D-tiles stack: it loads tiles and draws nothing.
+  const ids = ['wind', 'weather-radar', ...GUGIK_LAYER_IDS];
+  owner.attachDataManager({
+    layers: new Map(
+      ids.map((id) => [
+        id,
+        {
+          module: {
+            attachShellServices(services) {
+              attached.set(id, services);
+            },
+          },
+        },
+      ]),
+    ),
+    subscribe: () => () => {},
+  });
+  for (const id of GUGIK_LAYER_IDS) {
+    assert.equal(attached.get(id)?.imageryHost(), host, id);
+  }
+  owner.disconnect();
+  for (const id of GUGIK_LAYER_IDS) assert.equal(attached.get(id), null);
+});
 
 test('weather shell supplies live imagery hosts to wind and observations and releases them', (t) => {
   const { owner } = bindings(t);
