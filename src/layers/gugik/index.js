@@ -7,7 +7,7 @@ import {
   gugikLayerId,
   gugikMaxAltitude,
 } from './services.js';
-import { imageryHostStatus } from '../weather/imageryHost.js';
+import { NO_IMAGERY_HOST } from '../weather/imageryHost.js';
 import { t } from '../../i18n/index.js';
 
 /**
@@ -31,7 +31,11 @@ export { GUGIK_LAYER_IDS, gugikLayerId } from './services.js';
  * @param {{id: string, cesium?: object}} options - A catalog id such as `egib-parcels`, and an optional Cesium override for tests.
  * @returns {object} A data layer for the application catalog.
  */
-export function createGugikLayer({ id, cesium = Cesium } = {}) {
+export function createGugikLayer({
+  id,
+  cesium = Cesium,
+  eventTarget = globalThis.window,
+} = {}) {
   const entry = gugikEntry(id);
   if (!entry) throw new TypeError(`Unknown GUGiK layer: ${id}`);
   const { service, layer: descriptor } = entry;
@@ -41,7 +45,9 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
   let imageryHost = null;
   let enabled = false;
   let removeCamera = null;
+  let removeStackListener = null;
   let notifyChange = () => {};
+  let onStackChanged = null;
 
   const getHost = () => {
     if (typeof imageryHost === 'function') return imageryHost();
@@ -55,12 +61,23 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
 
   const tooHigh = () => cameraAltitude() > maxAltitudeM;
 
+  /**
+   * These are ground records, and draped imagery takes the shape of whatever
+   * surface it lands on. On a photogrammetric 3D stack that surface is tree
+   * canopies, roofs and walls, so a gas main climbs the nearest lime tree and
+   * reads as running through it. A utility map that puts a pipe inside a tree
+   * is worse than one that admits it cannot draw here, so the layer stays off
+   * the tileset and says why. A globe stack — including GUGiK Ortofotomapa —
+   * drapes onto terrain, which is the ground, and shows them correctly.
+   */
+  const drapesWrong = () => (getHost()?.kind ?? 'none') === 'tileset';
+
   const refresh = () => {
     if (!enabled || !rendering) return;
     // Detaching above the threshold is the whole zoom policy: the service
     // returns transparent tiles up there, so staying attached would spend
     // requests to composite nothing.
-    if (tooHigh()) rendering.detach();
+    if (tooHigh() || drapesWrong()) rendering.detach();
     else rendering.apply();
   };
 
@@ -71,6 +88,20 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
     source: service.source,
     init(nextViewer) {
       viewer = nextViewer;
+      // Switching the map stack swaps the surface under the overlay, and the
+      // camera need not move for it: without this, flying in on a 3D stack and
+      // then picking a globe basemap leaves the layer detached until something
+      // else nudges it, which reads as a dead toggle.
+      onStackChanged = () => {
+        refresh();
+        notifyChange();
+      };
+      eventTarget?.addEventListener?.('gev:map-stack-changed', onStackChanged);
+      removeStackListener = () =>
+        eventTarget?.removeEventListener?.(
+          'gev:map-stack-changed',
+          onStackChanged,
+        );
       rendering = createGugikRendering({
         getHost,
         cesium,
@@ -114,11 +145,12 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
       refresh();
     },
     getPanel() {
+      const kind = getHost()?.kind ?? 'none';
       return {
         detail: {
           status: tooHigh() ? t('Zoom in to load this record set') : null,
           coverage: t('Published county by county; many areas have none'),
-          host: imageryHostStatus(getHost() ?? { kind: 'none' }),
+          host: kind === 'globe' ? null : t(NO_IMAGERY_HOST),
         },
         chips: [],
       };
@@ -143,12 +175,15 @@ export function createGugikLayer({ id, cesium = Cesium } = {}) {
         service: service.id,
         wms: descriptor.wms,
         maxAltitudeM,
+        hostKind: getHost()?.kind ?? 'none',
         cameraAltitudeM: Math.round(cameraAltitude()),
       };
     },
     destroy() {
       removeCamera?.();
       removeCamera = null;
+      removeStackListener?.();
+      removeStackListener = null;
       rendering?.destroy();
       rendering = null;
       viewer = null;

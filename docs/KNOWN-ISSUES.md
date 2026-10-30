@@ -10,31 +10,27 @@ For the roadmap and open backlog, see the repository issue tracker.
 
 ## Open
 
-### GUGiK overlays appear on Google 3D only after the camera moves
-Status: Open (upstream limitation)
+### GUGiK record layers do not draw on 3D-tiles map stacks
+Status: By design (upstream limitation)
 
 Context:
-- The GUGiK data layers drape as imagery. On a globe stack they draw as soon as
-  they are toggled; on a 3D-tiles stack they are added to the tileset's own
-  `imageryLayers`, which is the surface actually being drawn.
-- Cesium re-textures a 3D tile with newly added imagery when that tile is
-  loaded, so a layer switched on while the camera is parked stays invisible
-  until something makes the tileset fetch tiles again. Any camera move does it,
-  and in normal use the camera is rarely still, so this mostly shows up when
-  toggling layers from a fixed viewpoint.
+- The GUGiK layers arrive as draped imagery, and draped imagery takes the shape
+  of whatever surface it lands on. On a photogrammetric stack that surface is
+  tree canopies, roofs and walls, so a gas main climbs the nearest tree and
+  reads as running through it.
+- A utility map that puts a pipe inside a tree is worse than one that says it
+  cannot draw here, so on a 3D-tiles stack the layers stay detached and the
+  panel shows "Hidden by this map source · choose a globe map".
+- Vector rendering would not fix it either: the services do expose WFS, but a
+  ground-clamped polyline still follows the photogrammetric mesh, because
+  there is no separate ground surface in those tiles to clamp to.
 - Cesium's own changelog calls draping on 3D Tiles "basic support"
-  ([#12567](https://github.com/CesiumGS/cesium/pull/12567)), with later fixes
-  for layer removal and visibility; forcing a re-texture is not exposed.
-
-Ruled out as workarounds (none re-textures loaded tiles):
-- `Cesium3DTileset.trimLoadedTiles()`
-- `Cesium3DTileset.makeStyleDirty()`
-- toggling `tileset.show` or the imagery layer's `show`
-- lowering and restoring `maximumScreenSpaceError`
+  ([#12567](https://github.com/CesiumGS/cesium/pull/12567)).
 
 Not affected:
-- Every globe stack (Esri, OSM, Bing, GUGiK Ortofotomapa), where the layers
-  draw immediately on toggle.
+- Every globe stack — Esri, OSM, Bing and GUGiK Ortofotomapa — where the
+  imagery drapes onto terrain, which is the ground, and the records draw
+  correctly. Ortofotomapa is the natural pairing for Polish records.
 
 ### Street traffic can be slow/uneven when panning across dense city blocks
 Status: Open (partially mitigated)

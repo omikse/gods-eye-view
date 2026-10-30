@@ -179,6 +179,34 @@ test('dropping below the gate attaches, and rising above it detaches again', () 
   assert.equal(viewer.added.length, 0);
 });
 
+test('a photogrammetric tileset gets no drape, because it is not the ground', () => {
+  const { cesium } = stubCesium();
+  const viewer = stubViewer();
+  const collection = { ...viewer.imageryLayers };
+  let kind = 'globe';
+  const layer = createGugikLayer({ id: 'gesut-gas', cesium });
+  layer.init(viewer);
+  layer.attachShellServices({
+    imageryHost: () => ({ collection: viewer.imageryLayers, kind }),
+  });
+  layer.enable();
+  assert.equal(viewer.added.length, 1, 'a globe surface is the ground');
+
+  // Draped imagery takes the shape of what it lands on: on photogrammetry
+  // that is tree canopies and walls, so a gas main would climb a tree.
+  kind = 'tileset';
+  layer.update();
+  assert.equal(viewer.added.length, 0);
+  assert.equal(layer.getDiagnostics().hostKind, 'tileset');
+  assert.ok(layer.getPanel().detail.host, 'the panel must say why');
+
+  kind = 'globe';
+  layer.update();
+  assert.equal(viewer.added.length, 1);
+  assert.equal(layer.getPanel().detail.host, null);
+  void collection;
+});
+
 test('toggling one record set leaves the others untouched', () => {
   const { cesium } = stubCesium();
   const viewer = stubViewer();
