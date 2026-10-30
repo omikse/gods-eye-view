@@ -3083,5 +3083,18 @@
   "Load scenes from an exported JSON file": "Завантажити сцени з експортованого файлу JSON",
   "Download the timing log of the last play": "Завантажити журнал таймінгів останнього відтворення",
   "Edit anchors, data packs and shot details": "Змінити якорі, пакети даних і параметри кадрів",
-  "Download this scene as JSON or an asset bundle": "Завантажити цю сцену у форматі JSON або архівом ресурсів"
+  "Download this scene as JSON or an asset bundle": "Завантажити цю сцену у форматі JSON або архівом ресурсів",
+  "Zoom in to load utility networks": "Наблизьте, щоб завантажити інженерні мережі",
+  "Published county by county; many areas have none": "Публікується за повітами; у багатьох районах даних немає",
+  "Water": "Водопровід",
+  "Sewage": "Каналізація",
+  "Gas": "Газопровід",
+  "Telecom": "Зв'язок",
+  "Heating": "Теплова мережа",
+  "Special": "Спеціальні",
+  "Unidentified": "Невизначені",
+  "Devices": "Пристрої",
+  "GESUT overlay failed": "Не вдалося завантажити шар GESUT",
+  "network": "мережа",
+  "Buried utilities (Poland)": "Підземні мережі (Польща)"
 }

@@ -611,6 +611,51 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     optionOwner: 'flights',
   }),
   Object.freeze({
+    id: 'gesut-devices',
+    token: '04',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-gas',
+    token: '8',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-heating',
+    token: '01',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-power',
+    token: '9',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-sewage',
+    token: '7',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-special',
+    token: '02',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-telecom',
+    token: '00',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-unidentified',
+    token: '03',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'gesut-water',
+    token: '6',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'gnss-integrity',
     token: '3',
     disposition: 'enabled-only',

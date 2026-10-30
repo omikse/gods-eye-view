@@ -1067,11 +1067,13 @@ test('the voice TOOL SCHEMA matches the pinned contract — the mission mapping 
   // preserves the mission mapping and globe-rotation arguments.
   // S2 GhostMaps extends the generated layer enums; both feature contracts remain.
   // GUGiK Ortofotomapa adds one set_map_stack enum value and one clause on
-  // that argument's description; the mission mapping is untouched.
-  assert.equal(block.length, 31299, 'serialized tool schema length drifted');
+  // that argument's description; GESUT adds nine generated layer enum values,
+  // one per utility network, with their aliases. The mission mapping is
+  // untouched by both.
+  assert.equal(block.length, 31929, 'serialized tool schema length drifted');
   assert.equal(
     crypto.createHash('sha256').update(block).digest('hex'),
-    '08a40147f0a10610d91e73540566f91e915acecf624f3f44e9f5aff1bc067fc8',
+    '4856507961a900ef04d2c0491104532dc4fd8c5ff18e940b0b402d0cf995005f',
     'the first-run missions must ride EXISTING tools: no schema edit, no cache bust',
   );
   const instructions = fs.readFileSync(

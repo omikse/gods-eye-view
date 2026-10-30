@@ -352,8 +352,13 @@ test('deixis prompt lint: one short rule, and every sentinel it names exists in 
   // clause on set_map_stack's `stack`, which is where the other per-stack
   // trigger phrases already live, so the rule is still stated once. The
   // disambiguation table in instructions.js was deliberately left alone.
+  //
+  // Then 52,100 -> 52,750 for GESUT, which is nine generated layer enum values
+  // (one per utility network, each its own Data Layers toggle) and one or two
+  // spoken aliases each — no new tool and no new rule. The aliases were cut to
+  // the shortest set that still reaches each network by name.
   const size = instructions.length + JSON.stringify(GEV_REALTIME_TOOLS).length;
-  assert.ok(size <= 52100, `prompt size ${size}`);
+  assert.ok(size <= 52750, `prompt size ${size}`);
 });
 
 

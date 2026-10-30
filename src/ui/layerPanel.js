@@ -77,6 +77,22 @@ const PANEL_GROUPS = [
     ],
   },
   {
+    // Not 'Utility networks': the panel already has a 'Utilities' group for
+    // app tools (directions, radio), and the two read as the same thing.
+    label: msg('Buried utilities (Poland)'),
+    ids: [
+      'gesut-water',
+      'gesut-sewage',
+      'gesut-gas',
+      'gesut-power',
+      'gesut-telecom',
+      'gesut-heating',
+      'gesut-special',
+      'gesut-unidentified',
+      'gesut-devices',
+    ],
+  },
+  {
     label: msg('Weather'),
     ids: [
       'air-quality',

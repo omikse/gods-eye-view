@@ -2873,5 +2873,18 @@
   "Play from this scene through the rest of the project": "从此场景开始播放项目中的其余场景",
   "Play the shot after the selected one, moving on to the next scene when needed": "播放所选镜头的下一个镜头，必要时进入下一个场景",
   "Edit anchors, data packs and shot details": "编辑锚点、数据包和镜头详情",
-  "Download this scene as JSON or an asset bundle": "将此场景下载为 JSON 或资源包"
+  "Download this scene as JSON or an asset bundle": "将此场景下载为 JSON 或资源包",
+  "Zoom in to load utility networks": "放大以加载管线网络",
+  "Published county by county; many areas have none": "按县逐一发布，许多地区没有数据",
+  "Water": "给水",
+  "Sewage": "排水",
+  "Gas": "燃气",
+  "Telecom": "通信",
+  "Heating": "供热",
+  "Special": "专用",
+  "Unidentified": "未识别",
+  "Devices": "设备",
+  "GESUT overlay failed": "GESUT 图层加载失败",
+  "network": "管线",
+  "Buried utilities (Poland)": "地下管线（波兰）"
 }

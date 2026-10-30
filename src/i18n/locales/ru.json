@@ -3083,5 +3083,18 @@
   "Play from this scene through the rest of the project": "Воспроизвести с этой сцены и далее по всему проекту",
   "Play the shot after the selected one, moving on to the next scene when needed": "Воспроизвести кадр после выбранного, при необходимости перейдя к следующей сцене",
   "Edit anchors, data packs and shot details": "Изменить якоря, пакеты данных и параметры кадров",
-  "Download this scene as JSON or an asset bundle": "Скачать эту сцену в формате JSON или архивом ресурсов"
+  "Download this scene as JSON or an asset bundle": "Скачать эту сцену в формате JSON или архивом ресурсов",
+  "Zoom in to load utility networks": "Приблизьте, чтобы загрузить инженерные сети",
+  "Published county by county; many areas have none": "Публикуется по районам; во многих местах данных нет",
+  "Water": "Водопровод",
+  "Sewage": "Канализация",
+  "Gas": "Газопровод",
+  "Telecom": "Связь",
+  "Heating": "Теплосеть",
+  "Special": "Специальные",
+  "Unidentified": "Неопознанные",
+  "Devices": "Устройства",
+  "GESUT overlay failed": "Не удалось загрузить слой GESUT",
+  "network": "сеть",
+  "Buried utilities (Poland)": "Подземные сети (Польша)"
 }

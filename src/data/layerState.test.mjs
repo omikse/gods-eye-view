@@ -202,8 +202,9 @@ function encode(state) {
 
 test('production registry is exact, canonical, and rejects incomplete contracts', async () => {
   assert.equal(validateLayerStateRegistry(), true);
-  assert.equal(REGISTERED_LAYER_IDS.length, 32);
-  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 32);
+  // 32 before the nine GESUT utility-network layers.
+  assert.equal(REGISTERED_LAYER_IDS.length, 41);
+  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 41);
   assert.ok(REGISTERED_LAYER_IDS.includes('transit'));
   assert.deepEqual(REGISTERED_LAYER_IDS, [...REGISTERED_LAYER_IDS].sort());
   assert.deepEqual(LEGACY_LAYER_STATE_TOKENS, {
@@ -242,25 +243,25 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   for (const [id, token] of Object.entries(LEGACY_LAYER_STATE_TOKENS)) {
     assert.equal(LAYER_STATE_TOKEN_RESERVATIONS[id], token);
   }
-  assert.equal(nextLayerStateToken(), '6');
+  // Digits 6-9 and pairs 00-04 went to the nine GESUT utility networks, so
+  // the ledger has already crossed into two-character tokens.
+  assert.equal(nextLayerStateToken(), '05');
   assert.equal(
     nextLayerStateToken({
       ...LAYER_STATE_TOKEN_RESERVATIONS,
-      alpha: '6',
-      bravo: '7',
+      alpha: '05',
+      bravo: '06',
     }),
-    '8',
+    '07',
   );
-  const digitsExhausted = {
-    ...LAYER_STATE_TOKEN_RESERVATIONS,
-    ...Object.fromEntries(
-      [...'6789'].map((digit) => [`prior-${digit}`, digit]),
-    ),
-  };
-  assert.equal(nextLayerStateToken(digitsExhausted), '00');
+  // The live ledger already exhausts the digits, so this is it.
+  const digitsExhausted = { ...LAYER_STATE_TOKEN_RESERVATIONS };
+  assert.equal(nextLayerStateToken(digitsExhausted), '05');
+  // 00 and 01 are already the GESUT layers', so these two only move the first
+  // free pair along from 05.
   assert.equal(
-    nextLayerStateToken({ ...digitsExhausted, retired: '00', used: '01' }),
-    '02',
+    nextLayerStateToken({ ...digitsExhausted, retired: '05', used: '06' }),
+    '07',
   );
   assert.equal(
     nextLayerStateToken({
@@ -307,8 +308,8 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(
     validateLayerStateAllocations(LAYER_STATE_TOKEN_RESERVATIONS, {
       ...LAYER_STATE_TOKEN_RESERVATIONS,
-      future: '6',
-      next: '7',
+      future: '05',
+      next: '06',
     }),
     true,
   );
@@ -316,16 +317,17 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
     () =>
       validateLayerStateAllocations(LAYER_STATE_TOKEN_RESERVATIONS, {
         ...LAYER_STATE_TOKEN_RESERVATIONS,
-        future: '00',
+        future: '07',
       }),
-    /next free token 6/,
+    /next free token 05/,
   );
+  // Free the last digit back out of the ledger to reach the boundary again.
   const beforeLastDigit = { ...digitsExhausted };
-  delete beforeLastDigit['prior-9'];
+  delete beforeLastDigit['gesut-power'];
   assert.equal(
     validateLayerStateAllocations(beforeLastDigit, {
       ...beforeLastDigit,
-      futurePair: '00',
+      futurePair: '05',
       futureDigit: '9',
     }),
     true,
@@ -333,18 +335,18 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(
     validateLayerStateAllocations(digitsExhausted, {
       ...digitsExhausted,
-      pairB: '01',
-      pairA: '00',
+      pairB: '06',
+      pairA: '05',
     }),
     true,
   );
   assert.throws(
     () =>
       validateLayerStateAllocations(
-        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '6' },
-        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '6', competing: '6' },
+        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '05' },
+        { ...LAYER_STATE_TOKEN_RESERVATIONS, merged: '05', competing: '05' },
       ),
-    /next free token 7/,
+    /next free token 06/,
   );
   assert.throws(
     () => validateLayerStateAllocations({ future: '00' }, { future: '01' }),
@@ -500,7 +502,9 @@ test('unknown enabled-layer tokens reject the payload instead of becoming an emp
 });
 
 test('malformed enabled-layer lists reject the entire payload', () => {
-  for (const value of ['.c', 'c.', 'c..e', 'c.c', '00', 'c.00']) {
+  // 'zz' stands for a two-character token nobody owns; '00' used to play
+  // that part until the GESUT layers claimed the first pairs.
+  for (const value of ['.c', 'c.', 'c..e', 'c.c', 'zz', 'c.zz']) {
     assert.equal(
       decodeLayerStateParams(new URLSearchParams(`v=2&l=${value}`)),
       null,

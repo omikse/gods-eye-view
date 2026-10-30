@@ -3013,5 +3013,18 @@
   "Load scenes from an exported JSON file": "Charger des scènes depuis un fichier JSON exporté",
   "Download the timing log of the last play": "Télécharger le journal de minutage de la dernière lecture",
   "Edit anchors, data packs and shot details": "Modifier les ancres, les paquets de données et les détails des plans",
-  "Download this scene as JSON or an asset bundle": "Télécharger cette scène en JSON ou en archive de ressources"
+  "Download this scene as JSON or an asset bundle": "Télécharger cette scène en JSON ou en archive de ressources",
+  "Zoom in to load utility networks": "Zoomez pour charger les réseaux techniques",
+  "Published county by county; many areas have none": "Publié par comté ; de nombreuses zones n'en ont pas",
+  "Water": "Eau",
+  "Sewage": "Assainissement",
+  "Gas": "Gaz",
+  "Telecom": "Télécommunications",
+  "Heating": "Chauffage",
+  "Special": "Spécial",
+  "Unidentified": "Non identifié",
+  "Devices": "Équipements",
+  "GESUT overlay failed": "Échec de la couche GESUT",
+  "network": "réseau",
+  "Buried utilities (Poland)": "Réseaux enterrés (Pologne)"
 }
