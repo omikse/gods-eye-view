@@ -1,45 +1,39 @@
 import * as Cesium from 'cesium';
-import { createGesutRendering, GESUT_MAX_ALTITUDE_M } from './rendering.js';
-import { GESUT_NETWORKS, gesutNetwork } from './networks.js';
+import { createGugikRendering } from './rendering.js';
+import {
+  GUGIK_SERVICES,
+  GUGIK_LAYER_IDS,
+  gugikEntry,
+  gugikLayerId,
+} from './services.js';
 import { imageryHostStatus } from '../weather/imageryHost.js';
 import { t } from '../../i18n/index.js';
 
 /**
- * GESUT — the Polish national utility-network overlay (Krajowa Integracja
- * Uzbrojenia Terenu).
+ * The GUGiK national record overlays — buried utilities (GESUT), the land and
+ * building register (EGiB) and local zoning plans (MPZP).
  *
- * One catalog layer per network, so each run toggles on its own row in the
- * Data Layers panel under a shared heading. That costs one WMS request per
- * visible network instead of one composited request for all nine; the panel is
- * where people reach for a single utility, so requests are the right side to
- * spend on.
+ * One catalog layer per published WMS layer, so every record set toggles on
+ * its own row in the Data Layers panel under its service's heading. That costs
+ * one request per visible layer rather than one composited request per
+ * service, which is the right side to spend on when the panel is where people
+ * reach for a single record set.
  *
- * Coverage is the thing to understand about this source, and it is why the
- * layer states it rather than leaving a blank overlay to be read as a bug.
- * GESUT is maintained county by county and only some counties publish into the
- * national service, so at one zoom level central Gdynia returns dense geometry
- * while the Kraków market square returns an empty image. Nothing is wrong in
- * either case, and an empty answer is indistinguishable from "no pipes here",
- * so the layer states the rule instead of guessing which case it is in.
- * @module layers/gesut
+ * `services.js` carries the measurements behind the per-service altitude gates
+ * and the coverage caveat these layers report.
+ * @module layers/gugik
  */
 
-/** `gesut-water`, … — the catalog id for a network. */
-export function gesutLayerId(networkId) {
-  return `gesut-${networkId}`;
-}
-
-export const GESUT_LAYER_IDS = Object.freeze(
-  GESUT_NETWORKS.map(({ id }) => gesutLayerId(id)),
-);
+export { GUGIK_LAYER_IDS, gugikLayerId } from './services.js';
 
 /**
- * @param {{network: string, cesium?: object}} options - Which network, and an optional Cesium override for tests.
+ * @param {{id: string, cesium?: object}} options - A catalog id such as `egib-parcels`, and an optional Cesium override for tests.
  * @returns {object} A data layer for the application catalog.
  */
-export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
-  const descriptor = gesutNetwork(network);
-  if (!descriptor) throw new TypeError(`Unknown GESUT network: ${network}`);
+export function createGugikLayer({ id, cesium = Cesium } = {}) {
+  const entry = gugikEntry(id);
+  if (!entry) throw new TypeError(`Unknown GUGiK layer: ${id}`);
+  const { service, layer: descriptor } = entry;
   let viewer = null;
   let rendering = null;
   let imageryHost = null;
@@ -57,7 +51,7 @@ export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
   const cameraAltitude = () =>
     Number(viewer?.camera?.positionCartographic?.height) || 0;
 
-  const tooHigh = () => cameraAltitude() > GESUT_MAX_ALTITUDE_M;
+  const tooHigh = () => cameraAltitude() > service.maxAltitudeM;
 
   const refresh = () => {
     if (!enabled || !rendering) return;
@@ -65,19 +59,24 @@ export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
     // returns transparent tiles up there, so staying attached would spend
     // requests to composite nothing.
     if (tooHigh()) rendering.detach();
-    else rendering.apply([descriptor.id]);
+    else rendering.apply();
   };
 
   return {
-    id: gesutLayerId(descriptor.id),
+    id,
     name: t(descriptor.label),
-    icon: '╬',
-    source: 'GUGiK GESUT · PL',
+    icon: service.icon,
+    source: service.source,
     init(nextViewer) {
       viewer = nextViewer;
-      rendering = createGesutRendering({
+      rendering = createGugikRendering({
         getHost,
         cesium,
+        target: {
+          url: service.url,
+          wms: descriptor.wms,
+          credit: service.credit,
+        },
         onChange: () => notifyChange(),
       });
     },
@@ -115,7 +114,7 @@ export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
     getPanel() {
       return {
         detail: {
-          status: tooHigh() ? t('Zoom in to load utility networks') : null,
+          status: tooHigh() ? t('Zoom in to load this record set') : null,
           coverage: t('Published county by county; many areas have none'),
           host: imageryHostStatus(getHost() ?? { kind: 'none' }),
         },
@@ -126,21 +125,22 @@ export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
       const diagnostics = rendering?.getDiagnostics();
       return {
         count: diagnostics?.attached ? 1 : 0,
-        countLabel: t('network'),
+        countLabel: t('record set'),
         lastUpdate: null,
         loading: false,
         // A stored marker or a raw provider message; `t()` passes the latter
         // through unchanged, as the other layers' error text does.
         error: diagnostics?.error ? t(diagnostics.error) : null,
         stale: false,
-        source: 'GUGiK GESUT',
+        source: service.source,
       };
     },
     getDiagnostics() {
       return {
         ...rendering?.getDiagnostics(),
-        network: descriptor.id,
+        service: service.id,
         wms: descriptor.wms,
+        maxAltitudeM: service.maxAltitudeM,
         cameraAltitudeM: Math.round(cameraAltitude()),
       };
     },
@@ -155,12 +155,22 @@ export function createGesutNetworkLayer({ network, cesium = Cesium } = {}) {
 }
 
 /**
- * Every GESUT network layer, in catalog order.
+ * Every GUGiK record layer, in service then layer order.
  * @param {{cesium?: object}} [options] - Optional Cesium override for tests.
- * @returns {object[]} One layer per network.
+ * @returns {object[]} One layer per published WMS layer.
  */
-export function createGesutLayers(options = {}) {
-  return GESUT_NETWORKS.map(({ id }) =>
-    createGesutNetworkLayer({ ...options, network: id }),
-  );
+export function createGugikLayers(options = {}) {
+  return GUGIK_LAYER_IDS.map((id) => createGugikLayer({ ...options, id }));
 }
+
+/** The panel groups these layers contribute, in service order. */
+export const GUGIK_PANEL_GROUPS = Object.freeze(
+  GUGIK_SERVICES.map((service) =>
+    Object.freeze({
+      label: service.group,
+      ids: Object.freeze(
+        service.layers.map(({ id }) => gugikLayerId(service.id, id)),
+      ),
+    }),
+  ),
+);

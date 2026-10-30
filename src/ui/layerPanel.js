@@ -93,6 +93,29 @@ const PANEL_GROUPS = [
     ],
   },
   {
+    label: msg('Cadastre (Poland)'),
+    ids: [
+      'egib-parcels',
+      'egib-parcel-numbers',
+      'egib-buildings',
+      'egib-land-use',
+      'egib-soil-classes',
+      'egib-districts',
+    ],
+  },
+  {
+    label: msg('Zoning plans (Poland)'),
+    ids: [
+      'mpzp-boundaries',
+      'mpzp-raster',
+      'mpzp-areas',
+      'mpzp-lines',
+      'mpzp-points',
+      'mpzp-zones',
+      'mpzp-building-lines',
+    ],
+  },
+  {
     label: msg('Weather'),
     ids: [
       'air-quality',

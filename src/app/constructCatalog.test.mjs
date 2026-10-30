@@ -40,8 +40,8 @@ test('catalogs construct distinct layers and classification from their supplied 
     signal: b.signal,
     surface: fixtureSurface(b.signal),
   });
-  // 33 before the nine GESUT utility-network layers.
-  assert.equal(first.layers.length, 42);
+  // 33 before the GUGiK record layers (GESUT, EGiB, MPZP).
+  assert.equal(first.layers.length, 55);
   assert.ok(first.get('local-adsb'), 'Local ADS-B is registered');
   assert.deepEqual(
     first.metadata.find(({ id }) => id === 'local-adsb'),
@@ -156,7 +156,7 @@ test('Mapillary can be omitted or replaced without changing catalog membership',
     surface: fixtureSurface(lifetime.signal),
   };
   const catalog = createApplicationCatalog(options);
-  assert.equal(catalog.layers.length, 42);
+  assert.equal(catalog.layers.length, 55);
   assert.deepEqual(catalog.get('street-level').providerIds, []);
   assert.equal(
     catalogControlServices(catalog).streetLevelLayer,

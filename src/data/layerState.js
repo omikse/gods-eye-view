@@ -600,6 +600,36 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
   Object.freeze({ id: 'directions', token: 'n', disposition: 'enabled-only' }),
   Object.freeze({ id: 'earthquakes', token: 'e', disposition: 'enabled-only' }),
   Object.freeze({
+    id: 'egib-buildings',
+    token: '07',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'egib-districts',
+    token: '0a',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'egib-land-use',
+    token: '08',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'egib-parcel-numbers',
+    token: '06',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'egib-parcels',
+    token: '05',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'egib-soil-classes',
+    token: '09',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'fire-perimeters',
     token: '2',
     disposition: 'enabled-only',
@@ -681,6 +711,41 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
   Object.freeze({
     id: 'military-installations',
     token: 'i',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-areas',
+    token: '0d',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-boundaries',
+    token: '0b',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-building-lines',
+    token: '0h',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-lines',
+    token: '0e',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-points',
+    token: '0f',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-raster',
+    token: '0c',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'mpzp-zones',
+    token: '0g',
     disposition: 'enabled-only',
   }),
   Object.freeze({

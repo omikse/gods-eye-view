@@ -49,9 +49,9 @@ test('the complete Realtime tool payload pins the manifest-generated layer relea
     // The Operator HUD layout leaves set_hud's layout enum.
     // GUGiK Ortofotomapa joins set_map_stack's enum and its disambiguation
     // wording; no other tool's arguments move.
-    // GESUT extends the generated layer enums with one value per utility
-    // network, each its own Data Layers toggle.
-    '64e362f645ab9429a5e633c95ccf9ff76eace5e49cab7af18603b061d069fb49',
+    // The GUGiK record layers extend the generated layer enums with one value
+    // per published WMS layer across three services, each its own toggle.
+    'ae84469fe74250652a64b70dfe07464ea99947cc5d4612de53225dd0ae02ac88',
   );
 });
 
