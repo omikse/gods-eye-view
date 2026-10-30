@@ -5,7 +5,7 @@ import { readStylesheet } from './testSupport/readStylesheet.mjs';
 //
 // The owner's complaint was two clicks (open panel → open dropdown) to change
 // basemap. These tests pin the three things that make the row a faithful swap:
-// it projects the owner-approved four-source allowlist from the controller's
+// it projects the owner-approved source allowlist from the controller's
 // stack data, a click dispatches the same selection the `change` handler used
 // to, and the lit chip tracks controller state rather than the click. Run with:
 // npm test
@@ -119,9 +119,16 @@ const CONTROLLER_STACKS = [
     available: true,
     unavailableReason: null,
   },
+  {
+    id: 'gugik-orto',
+    label: 'GUGiK Ortofotomapa',
+    requiresIon: false,
+    available: true,
+    unavailableReason: null,
+  },
 ];
 
-test('the row renders exactly the five owner-approved sources', () => {
+test('the row renders exactly the six owner-approved sources', () => {
   const container = makeElement();
   renderMapStackChips(container, CONTROLLER_STACKS, {
     activeId: 'photoreal',
@@ -130,7 +137,14 @@ test('the row renders exactly the five owner-approved sources', () => {
 
   assert.deepEqual(
     container.children.map((chip) => chip.dataset.stackId),
-    ['photoreal', 'bing-aerial', 'bing-labels', 'esri-imagery', 'osm'],
+    [
+      'photoreal',
+      'bing-aerial',
+      'bing-labels',
+      'esri-imagery',
+      'osm',
+      'gugik-orto',
+    ],
   );
   assert.deepEqual(container.children.map(chipText), [
     'Google 3D',
@@ -138,6 +152,7 @@ test('the row renders exactly the five owner-approved sources', () => {
     'Bing Labels',
     'Esri Satellite',
     'OSM',
+    'GUGiK Ortofotomapa',
   ]);
   assert.deepEqual(PRESENTED_MAP_STACK_IDS, [
     'photoreal',
@@ -145,6 +160,7 @@ test('the row renders exactly the five owner-approved sources', () => {
     'bing-labels',
     'esri-imagery',
     'osm',
+    'gugik-orto',
   ]);
   assert.ok(
     container.children.every(
@@ -168,7 +184,7 @@ test('internal and future stacks stay outside the approved presentation set', ()
   ];
   renderMapStackChips(container, withHybrid, { activeId: 'photoreal', doc });
 
-  assert.equal(container.children.length, 5);
+  assert.equal(container.children.length, PRESENTED_MAP_STACK_IDS.length);
   assert.doesNotMatch(container.children.map(chipText).join(' '), /Hybrid/);
 });
 

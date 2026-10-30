@@ -104,12 +104,16 @@ export const SHARE_VIEW_ENUMS = Object.freeze({
     'noir',
     'snow', // retired (RETIRED_STYLES): decodes as Normal
   ]),
+  // Positional: `encode` writes the INDEX of the value (see the varint code in
+  // `encodeField`), so a link minted today must decode to the same stack
+  // forever. New stacks append; nothing here is reordered or removed.
   mapStack: Object.freeze([
     'photoreal',
     'bing-aerial',
     'bing-labels',
     'esri-imagery',
     'osm',
+    'gugik-orto',
   ]),
   hudVariant: Object.freeze(['tactical', 'operator', 'minimal', 'cyber']),
   detectionMode: Object.freeze(['OFF', 'SPARSE', 'BALANCED', 'DENSE']),

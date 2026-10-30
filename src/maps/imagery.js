@@ -64,3 +64,51 @@ async function createBingIonImagery(style, accessToken) {
   ];
   return provider;
 }
+
+// GUGiK publishes the national orthophoto as an open WMTS: no key, no account,
+// and `Access-Control-Allow-Origin: *`, so tiles load straight from the browser
+// with no proxy of ours in the path.
+//
+// The service advertises EPSG:2180, EPSG:3857 and EPSG:4326 matrix sets. We take
+// EPSG:3857 because its scale denominators and top-left corner are the standard
+// Web Mercator ladder that `WebMercatorTilingScheme` already indexes; only the
+// MatrixWidth/MatrixHeight are clipped to the Polish extent, which costs us
+// nothing because `rectangle` keeps Cesium from asking for tiles outside it.
+//
+// That rectangle is load-bearing, not an optimization. Outside the declared
+// bounding box the service answers HTTP 200 with an XML exception instead of a
+// tile, which would reach Cesium as an undecodable image and trip the tile
+// failure path rather than reading as "no coverage here".
+export const GUGIK_ORTO_RECTANGLE_DEGREES = Object.freeze({
+  west: 13.8,
+  south: 48.8,
+  east: 24.4,
+  north: 55.0,
+});
+
+export const GUGIK_ATTRIBUTION_HTML =
+  '<a href="https://www.geoportal.gov.pl" target="_blank" rel="noopener">© GUGiK — Geoportal Krajowy</a>';
+
+const GUGIK_ORTO_MAX_LEVEL = 19;
+
+export function createGugikOrtoImagery() {
+  const { west, south, east, north } = GUGIK_ORTO_RECTANGLE_DEGREES;
+  return new Cesium.WebMapTileServiceImageryProvider({
+    url: 'https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/StandardResolution',
+    layer: 'ORTOFOTOMAPA',
+    style: 'default',
+    format: 'image/jpeg',
+    tileMatrixSetID: 'EPSG:3857',
+    // KVP mode: the matrix identifiers are prefixed, so the level number alone
+    // is not what the service expects on the wire.
+    tileMatrixLabels: Array.from(
+      { length: GUGIK_ORTO_MAX_LEVEL + 1 },
+      (_, level) => `EPSG:3857:${level}`,
+    ),
+    maximumLevel: GUGIK_ORTO_MAX_LEVEL,
+    tilingScheme: new Cesium.WebMercatorTilingScheme(),
+    rectangle: Cesium.Rectangle.fromDegrees(west, south, east, north),
+    credit: GUGIK_ATTRIBUTION_HTML,
+    enablePickFeatures: false,
+  });
+}

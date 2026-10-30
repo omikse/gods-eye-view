@@ -20,6 +20,7 @@ export const PRESENTED_MAP_STACK_IDS = Object.freeze([
   'bing-labels',
   'esri-imagery',
   'osm',
+  'gugik-orto',
 ]);
 
 /**

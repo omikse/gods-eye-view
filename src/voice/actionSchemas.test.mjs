@@ -47,7 +47,9 @@ test('the complete Realtime tool payload pins the manifest-generated layer relea
     // is consolidated without changing either feature's arguments.
     // Snow leaves the set_visual_style enum.
     // The Operator HUD layout leaves set_hud's layout enum.
-    'f47a7f78f13b1f79978fa524fad2618e32bd813e1a5dfd746bf35d29909fc91b',
+    // GUGiK Ortofotomapa joins set_map_stack's enum and its disambiguation
+    // wording; no other tool's arguments move.
+    'de2fabb60a04348253fa9e3c43bb344ae754a4ed0ae5096dbce5f9b21c977a40',
   );
 });
 
@@ -168,6 +170,18 @@ test('all legacy action arguments are byte-identical after removing the delibera
     delete center.properties[axis].minimum;
     delete center.properties[axis].maximum;
   }
+  // GUGiK Ortofotomapa is an additive regional basemap; the global stacks keep
+  // their contract and their order.
+  const stacks = property('set_map_stack').stack;
+  assert.deepEqual(stacks.enum, [
+    'photoreal',
+    'bing-aerial',
+    'bing-labels',
+    'esri-imagery',
+    'osm',
+    'gugik-orto',
+  ]);
+  stacks.enum = stacks.enum.filter((value) => value !== 'gugik-orto');
   // Cyber adds one HUD layout and Operator was retired.
   const hud = property('set_hud').layout;
   assert.deepEqual(hud.enum, ['tactical', 'minimal', 'cyber']);

@@ -205,6 +205,12 @@ const STACK_ALIASES = new Map([
   ['road', 'osm'],
   ['roads', 'osm'],
   ['road map', 'osm'],
+  ['gugik-orto', 'gugik-orto'],
+  ['gugik', 'gugik-orto'],
+  ['geoportal', 'gugik-orto'],
+  ['ortofotomapa', 'gugik-orto'],
+  ['orthophoto', 'gugik-orto'],
+  ['polish orthophoto', 'gugik-orto'],
 ]);
 
 const FRAME_TARGETS = new Map([

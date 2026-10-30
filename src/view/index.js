@@ -31,12 +31,15 @@ const STYLES_BY_URL_NAME = Object.freeze(
 
 export const VIEW_STYLES = Object.freeze(Object.keys(STYLE_URL_NAMES));
 
+// Order is shared with `SHARE_VIEW_ENUMS.mapStack`, which encodes positionally;
+// new stacks append.
 export const VIEW_MAPS = Object.freeze([
   'photoreal',
   'bing-aerial',
   'bing-labels',
   'esri-imagery',
   'osm',
+  'gugik-orto',
 ]);
 
 /**
